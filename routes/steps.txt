@@ -1,0 +1,162 @@
+# Steps To Use Websockets:
+    -- For First Time Project:-
+        1- composer require beyondcode/laravel-websockets -w 
+        2- php artisan vendor:publish --provider="BeyondCode\LaravelWebSockets\WebSocketsServiceProvider" --tag="migrations"
+        3- php artisan migrate
+        4- php artisan vendor:publish --provider="BeyondCode\LaravelWebSockets\WebSocketsServiceProvider" --tag="config"
+        5- config/app.php => uncomment this line [App\Providers\BroadcastServiceProvider::class]
+        6- composer require pusher/pusher-php-server
+        7- npm install --save-dev laravel-echo pusher-js
+        8- set configurations in config/broadcasting.php [PUSHER_APP_ID,PUSHER_APP_KEY, etc....]
+        9- in .env file => [BROADCAST_DRIVER=pusher]
+        10- set in vite.config.js any js|css files U will use to be build 
+        11- npm install && npm run dev ===> after finish project npm run build 
+    -- Cloned Project 
+        
+-------------------------------------------------------------------------------------------------------------------------
+# Run Project:
+    1- php artisan serve 
+    2- php artisan websockets:serve && and check app_url/laravel-websokcets
+    3- npm run dev
+    4- 
+-------------------------------------------------------------------------------------------------------------------------
+$.ajaxSetup({
+    headers: {
+        'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+    }
+});
+
+$(document).ready(function () { // open chat click
+    $('.user-list').click(function (handler) {
+        $('#chat-container').html('');
+        var getUserId = $(this).attr('data-id');
+        receiver_id = getUserId;
+        $('.start-head').hide();
+        $('.chat-section').show();
+    });
+    // save chat
+    $('#chat-form').submit(function (handler) {
+        handler.preventDefault();
+        var message = $('#message').val();
+        $.ajax({
+            url: "/save-chat",
+            type: "POST",
+            data: {
+                sender_id: sender_id,
+                receiver_id: receiver_id,
+                message: message
+            },
+            success: function (response) {
+                if (response.success) {
+                    $('#message').val();
+                    let chat = response.data.message;
+                    let html = `
+                    <div class="current-user-chat text-end">
+                        <p>`+ chat + `</p>
+                    </div>`;
+                    $('#chat-container').append(html);
+                }
+                else {
+                    window.alert(response.errorMessage);
+                }
+            }
+        });
+        $('#message').val('');
+    });
+});
+
+Echo.join('status-update')
+    .here((users) => {
+        users.forEach(user => {
+            if (sender_id != user.id) {
+                $('#' + user.id + '-status').removeClass('offline-status');
+                $('#' + user.id + '-status').addClass('online-status');
+                $('#' + user.id + '-status-icon-offline').removeClass('offline-status');
+                $('#' + user.id + '-status-icon-offline').addClass('online-status');
+                $('#' + user.id + '-status').text('Online');
+            }
+        });
+
+    }).joining((user) => {
+        $('#' + user.id + '-status').removeClass('offline-status');
+        $('#' + user.id + '-status').addClass('online-status');
+        $('#' + user.id + '-status-icon-offline').removeClass('offline-status');
+        $('#' + user.id + '-status-icon-offline').addClass('online-status');
+        $('#' + user.id + '-status').text('Online');
+    }).leaving((user) => {
+        $('#' + user.id + '-status').removeClass('online-status');
+        $('#' + user.id + '-status').addClass('offline-status');
+        $('#' + user.id + '-status-icon-offline').removeClass('online-status');
+        $('#' + user.id + '-status-icon-offline').addClass('offline-status');
+        $('#' + user.id + '-status').text('Offline');
+    }).listen('UserStatusEvent', (e) => {
+        console.log('aaaaaaaaaaaaa' + e);
+    });
+
+Echo.private('broadcast-message')
+    .listen('.getChatMessage', (data) => {
+        if (sender_id == data.chat.receiver_id && receiver_id == data.chat.sender_id) {
+            let html = `
+            <div class="destination-user-chat text-start">
+            <p>`+ data.chat.message + `</p>
+            </div>
+            `;
+            $('#chat-container').append(html);
+        }
+    });
+-----------------------------------------------------------------------------------------------------------------------------------
+.chat-section {
+    display: none;
+}
+
+#chat-container {
+    background-color: #ffffff;
+    width: 100%;
+    height: 400px;
+    overflow-y: auto;
+    box-shadow: 0px 0px 12px #0000004d;
+    margin-bottom: 20px;
+}
+
+#message {
+    border: 1px solid #dee2e6;
+    padding: .375rem .75rem;
+    border-radius: 0.375rem;
+}
+.btn-primary {
+    background-color: #007bff;
+    color: #ffffff;
+}
+
+.offline-status {
+    color: red;
+    fill: red;
+}
+
+.online-status {
+    color: green;
+    fill: green;
+}
+
+.current-user-chat,
+.destination-user-chat {
+    font-size: 25px;
+    display: flex;
+    padding: 12px;
+}
+
+.current-user-chat p,
+.destination-user-chat p{
+    padding: 18px;
+    width: fit-content;
+    border-radius: 12px;
+}
+.current-user-chat{
+    justify-content: flex-end;
+}
+.current-user-chat p{
+    background-color: rgba(57, 192, 237,.4);
+}
+.destination-user-chat p{
+    background-color: rgba(237, 138, 57, 0.7);
+}
