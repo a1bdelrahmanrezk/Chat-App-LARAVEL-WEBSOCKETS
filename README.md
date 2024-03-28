@@ -25,7 +25,7 @@ npm run build
 ## Run project
 - start server
 ```bash
-php artisan server
+php artisan serve
 ```
 - start websocket
 ```bash

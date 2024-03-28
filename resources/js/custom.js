@@ -1,9 +1,16 @@
+// jQuery.ajaxSetup({
+//     headers: {
+//         'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+//     }
+// });
 $.ajaxSetup({
     headers: {
         'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
     }
 });
-
+// var sender_id ; var receiver_id; --> if get error in custom.js file
+// var sender_id = @json(auth()->user()->id);
+// var receiver_id;
 $(document).ready(function () { // open chat click
     $('.user-list').click(function (handler) {
         $('#chat-container').html('');
