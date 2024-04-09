@@ -33,11 +33,11 @@ class messageEvent implements ShouldBroadcast
             new PrivateChannel('broadcast-message'),
         ];
     }
-    public function broadcastAs()
+    public function broadcastAs() // Aliases 
     {
         return 'getChatMessage';
     }
-    public function broadcastWith()
+    public function broadcastWith() // For send any data
     {
         return [
             'chat'=>$this->chatData,

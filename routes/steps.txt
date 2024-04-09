@@ -32,7 +32,7 @@
         10- set in vite.config.js any js|css files U will use to be build 
         11- npm install && npm run dev ===> after finish project npm run build 
     -- Cloned Project 
-        1- video 12
+        1- video 13
 -------------------------------------------------------------------------------------------------------------------------
 # Run Project:
     1- php artisan serve 
