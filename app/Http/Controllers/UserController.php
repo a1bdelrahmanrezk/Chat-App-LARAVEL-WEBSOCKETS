@@ -58,6 +58,9 @@ class UserController extends Controller
             ]);
         }
     }
+    public function sendFile(){
+        
+    }
     public function loadChats(Request $request)
     {
         $request->validate([
